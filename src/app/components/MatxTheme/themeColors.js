@@ -7,10 +7,12 @@ export const textLight = {
 
 export const colors = {
   primary: '#38ef7d',
+  primaryTint:'#dbfce8',
   secondary: 'rgba(52, 49, 76, 0.54)',
   disabled: 'rgba(52, 49, 76, 0.38)',
   hint: 'rgba(52, 49, 76, 0.38)',
-  darkTint:'rgba(0,0,0,0.5)'
+  darkTint:'rgba(0,0,0,0.5)',
+  bgGray :'#ececec'
 };
 
 export const textDark = {

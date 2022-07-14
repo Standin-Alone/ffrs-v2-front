@@ -21,10 +21,12 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
 
   return ({
     width: "100%",
-    marginBottom: "16px",      
+    marginBottom: "16px",   
+    backgroundColor:colors.bgGray,   
     '& input:valid + fieldset': {
       borderColor:  textValidatorProps.value ? 'green' : '#ddd',      
-      color: textValidatorProps.value ? 'green' : '#ddd'      
+      color: textValidatorProps.value ? 'green' : '#ddd',
+      
     },
     '& input:invalid + fieldset': {
       borderColor: 'red',
@@ -90,7 +92,27 @@ export const EncodingForm = (props)=>{
         birthday,
         pobMunicipality,
         pobProvince,
-        pobCountry
+        pobCountry,
+        religion,
+        civilStatus,
+        spouseName,
+        mothersMaidenName,
+        isHouseholdHead,
+
+
+        // VERTICAL PAGE 2
+        highestFormalEducation,
+        personWithDisability,
+        fourPsBeneficiary,
+        memberOfIndigenousGroup,
+        specifyIndigenousGroup,        
+        withGovernmentId,
+        specifyIdType,        
+        specifyIdNumber,       
+        memberOfFarmerAssocCooperative,
+        specifyFarmerAssocCooperative,
+        personToNotifyInCaseOfEmergency
+
       } = state;
 
 
@@ -348,6 +370,7 @@ export const EncodingForm = (props)=>{
 
             {/* CONTACT INFO */}
             <Grid container>
+              {/* VERTICAL PAGE 1 */}
               <Grid item xs>
                 <div style={{flexDirection:'row',display:'flex'}}>
                     <Grid container  lg={100} marginX={2}>
@@ -490,13 +513,308 @@ export const EncodingForm = (props)=>{
                         </Grid>
                     </Grid>    
               </div>
+
+              <div style={{flexDirection:'row',display:'flex'}}>
+                         
+              <Grid container  lg={100} marginX={1}>
+                        <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                        <TextField
+                          type="text"
+                          name="religion"
+                          label="RELIGION (1= Christianity, 2 = Islam, 3 = Others)"
+                          onChange={handleChange}
+                          value={religion || ""}
+                          validators = {['required','matchRegexp:^[1-3]$']}
+                          errorMessages = {["this field is required",'Invalid Value']}
+                          inputProps={inputProps}                          
+                        />
+                        </Grid>
+                    </Grid>  
+
+                     <Grid container  lg={100} marginX={1}>
+                        <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                        <TextField
+                          type="text"
+                          name="civilStatus"
+                          label="CIVIL STATUS ( 1 = Single, 2 = Married, 3 = Widowed, 4 = Separated)"
+                          onChange={handleChange}                          
+                          value={civilStatus || ""}
+                          validators = {['required','matchRegexp:^[1-4]$']}
+                          errorMessages = {["this field is required",'Invalid Value']}
+                          inputProps={inputProps}                          
+                        />
+                        </Grid>
+                    </Grid>    
+              </div>
+
+
+              { civilStatus == 2 &&
+                <div style={{flexDirection:'row',display:'flex'}}>
+                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="spouseName"
+                              label="NAME OF SPOUSE"
+                              onChange={handleChange}
+                              value={spouseName || ""}
+                              validators = {['required','matchRegexp:^[1-3]$']}
+                              errorMessages = {["this field is required",'Invalid Value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>              
+                </div>
+              }
+
+
+                <div style={{flexDirection:'row',display:'flex'}}>
+                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="mothersMaidenName"
+                              label="MOTHER'S MAIDEN NAME"
+                              onChange={handleChange}
+                              value={mothersMaidenName || ""}
+                              validators = {['required']}
+                              errorMessages = {['"this field is required']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>              
+                </div>
+
+                <div style={{flexDirection:'row',display:'flex'}}>                          
+                    <Grid container  lg={100} marginX={1}>
+                        <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                          <TextField
+                            type="text"
+                            name="isHouseholdHead"
+                            label="IS HOUSEHOLD HEAD? ( 1 = YES, 2 = NO)"
+                            onChange={handleChange}
+                            value={isHouseholdHead || ""}
+                            validators = {['required','matchRegexp:^[1-2]$']}
+                            errorMessages = {['"this field is required','Invalid value']}
+                            inputProps={inputProps}                          
+                          />
+                        </Grid>
+                    </Grid>              
+                </div>
+
               </Grid>
               <Divider orientation="vertical" flexItem  sx={{ borderRightWidth: 4 ,borderColor: colors.darkTint,borderRadius:50}}>
                 {/* VERTICAL */}
               </Divider>
+
+              {/* VERTICAL PAGE 2 */}            
               <Grid item xs>
-                    <Button type="submit" variant="outlined" id="step-1-submit-button" style={{display:'none'}}>Submit</Button>
+                <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="highestFormalEducation"
+                              label="HIGHEST FORMAL EDUCATION ( 1 = Pre-School, 2 = Elementary, 3 = High School (non k-12), 4 = Junior High School (k-12), 5 = Senior High School (k-12), 6 = College, 7 = Vocational, 7 = Post-graduate, 8 = None  )"
+                              onChange={handleChange}
+                              value={highestFormalEducation || ""}
+                              validators = {['required','matchRegexp:^[1-9]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>              
+                  </div>
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="personWithDisability"
+                              label="PERSON WITH DISABILITY (PWD) ( 1 = YES, 2 = NO)"
+                              onChange={handleChange}
+                              value={personWithDisability || ""}
+                              validators = {['required','matchRegexp:^[1-2]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>              
+                  </div>
+
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="fourPsBeneficiary"
+                              label="4Ps BENEFICIARY ( 1 = YES, 2 = NO)"
+                              onChange={handleChange}
+                              value={fourPsBeneficiary || ""}
+                              validators = {['required','matchRegexp:^[1-2]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>              
+                  </div>
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="memberOfIndigenousGroup"
+                              label="MEMBER OF INDIGINEOUS GROUP ( 1 = YES, 2 = NO)"
+                              onChange={handleChange}
+                              value={memberOfIndigenousGroup || ""}
+                              validators = {['required','matchRegexp:^[1-2]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>      
+                      
+                      {  memberOfIndigenousGroup == 1 &&
+                          
+                        <Grid container  lg={100} marginX={1}>
+                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                              <TextField
+                                type="text"
+                                name="specifyIndigenousGroup"
+                                label="Specify"
+                                onChange={handleChange}
+                                value={specifyIndigenousGroup || ""}
+                                validators = {['required']}
+                                errorMessages = {["this field is required"]}
+                                inputProps={inputProps}                          
+                              />
+                            </Grid>
+                        </Grid>              
+                        
+                      }        
+                  </div>
+                      
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="withGovernmentId"
+                              label="WITH GOVERNMENT ID? ( 1 = YES, 2 = NO)"
+                              onChange={handleChange}
+                              value={withGovernmentId || ""}
+                              validators = {['required','matchRegexp:^[1-2]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>      
+                      
+                      {  withGovernmentId == 1 &&
+                          
+                        <>
+                        
+                          <Grid container  lg={100} marginX={1}>
+                              <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                                <TextField
+                                  type="text"
+                                  name="specifyIdType"
+                                  label="SPECIFY ID TYPE"
+                                  onChange={handleChange}
+                                  value={specifyIdType || ""}
+                                  validators = {['required']}
+                                  errorMessages = {["this field is required"]}
+                                  inputProps={inputProps}                          
+                                />
+                              </Grid>
+                          </Grid>       
+                          <Grid container  lg={100} marginX={1}>
+                              <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                                <TextField
+                                  type="text"
+                                  name="specifyIdNumber"
+                                  label="SPECIFY ID NUMBER"
+                                  onChange={handleChange}
+                                  value={specifyIdNumber || ""}
+                                  validators = {['required']}
+                                  errorMessages = {["this field is required"]}
+                                  inputProps={inputProps}                          
+                                />
+                              </Grid>
+                          </Grid>       
+                        
+                        </>
+                        
+                      }        
+                  </div>
+
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="memberOfFarmerAssocCooperative"
+                              label="MEMBER OF FARMER ASSOCIATION COOPERATIVE? ( 1 = YES, 2 = NO)"
+                              onChange={handleChange}
+                              value={memberOfFarmerAssocCooperative || ""}
+                              validators = {['required','matchRegexp:^[1-2]$']}
+                              errorMessages = {['"this field is required','Invalid value']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>      
+                      
+                      {  memberOfFarmerAssocCooperative == 1 &&
+                          
+                        <>
+                        
+                          <Grid container  lg={100} marginX={1}>
+                              <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                                <TextField
+                                  type="text"
+                                  name="specifyFarmerAssocCooperative"
+                                  label="SPECIFY FARMER ASSOCIATION COOPERATIVE"
+                                  onChange={handleChange}
+                                  value={specifyFarmerAssocCooperative || ""}
+                                  validators = {['required']}
+                                  errorMessages = {["this field is required"]}
+                                  inputProps={inputProps}                          
+                                />
+                              </Grid>
+                          </Grid>       
+        
+                        
+                        </>
+                        
+                      }        
+                  </div>
+
+                  <div style={{flexDirection:'row',display:'flex'}}>                          
+                      <Grid container  lg={100} marginX={1}>
+                          <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                            <TextField
+                              type="text"
+                              name="personToNotifyInCaseOfEmergency"
+                              label="PERSON TO NOTIFY IN CASE OF EMERGENCY?"
+                              onChange={handleChange}
+                              value={personToNotifyInCaseOfEmergency || ""}
+                              validators = {['required']}
+                              errorMessages = {['"this field is required']}
+                              inputProps={inputProps}                          
+                            />
+                          </Grid>
+                      </Grid>                            
+                  </div>
+
               </Grid>
+              <Button type="submit" variant="outlined" id="step-1-submit-button" style={{display:'none'}}>Submit</Button>
             </Grid>
             </Grid>                       
           </Grid>
