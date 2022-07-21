@@ -10,11 +10,10 @@ import { AddUserForm } from "./forms/EncodingForm";
 import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
 import {  CircularProgress,Button,Icon,Skeleton} from '@mui/material'
-
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
-
 import { EncodingForm } from "./forms/EncodingForm";
 
 const Container = styled("div")(({ theme }) => ({
@@ -75,6 +74,8 @@ const Encoding = () => {
 
   useEffect(()=>{    
 
+    
+
     let parameter = {
 
     }   
@@ -113,11 +114,16 @@ const Encoding = () => {
 
   return (
 
-    <Container>
+    <Container>    
     <Box className="breadcrumb">
       <Breadcrumb routeSegments={[{ name: "Material", path: "/encoding" }, { name: "Form" }]} />
     </Box>
-
+    <MuiAlert severity="error">
+        The collection of personal information is for documentation, planning, reporting and processing purposes in availing agricultural related interventions. Processed data shall only be shared to partner agencies for planning, reporting and other use in accordance to the mandate of the agency. You have the right to ask for a copy of your personal data that we hold about you as well as to ask for it to be corrected if you think it is wrong.
+    </MuiAlert>
+    <br/>
+    <br/>
+    
     <Stack spacing={3}>
                 
     <Stepper activeStep={activeStep} alternativeLabel>

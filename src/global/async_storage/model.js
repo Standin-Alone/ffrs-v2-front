@@ -1,12 +1,12 @@
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const setSession = async function (
+
+const setSession =  function (
     name,
     data
 ){
 
     try {
-         await AsyncStorage.setItem(name, JSON.stringify(data))
+          localStorage.setItem(name, JSON.stringify(data))
 
       
       } catch (e) {
@@ -18,12 +18,12 @@ const setSession = async function (
 }   
 
 
-const getSession = async function  (
+const getSession =  function  (
 name    
 ){
     try {
 
-        const value = await AsyncStorage.getItem(name);        
+        const value =  localStorage.getItem(name);        
          
         return JSON.parse(value);
         

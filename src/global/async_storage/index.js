@@ -24,8 +24,3 @@ export const GET_SESSION = async (value) => {
 
 
 
-export const getShipping = async () => {
-    return new Promise(function (resolve) {
-        resolve(readStorage('SHIPPIN_ADDRESS'));
-    });
-}
