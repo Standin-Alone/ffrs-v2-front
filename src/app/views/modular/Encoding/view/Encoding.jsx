@@ -6,15 +6,15 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/material";
 import { Breadcrumb, SimpleCard } from "app/components";
-import { AddUserForm } from "./forms/EncodingForm";
-import MUIDataTable from "mui-datatables";
 import { useEffect, useState } from "react";
-import {  CircularProgress,Button,Icon,Skeleton} from '@mui/material'
+import {  Grid,Button,Icon,Skeleton} from '@mui/material'
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
-import { EncodingForm } from "./forms/EncodingForm";
+import { PersonalInformation} from "./forms/PersonalInformation";
+import { FarmProfile} from "./forms/FarmProfile";
+
 
 const Container = styled("div")(({ theme }) => ({
     margin: "30px",
@@ -28,16 +28,16 @@ const Container = styled("div")(({ theme }) => ({
 
   
 function getSteps() {
-  return ["Encoding", "Uploading", "Create an ad"];
+  return ["Encoding", "Farm Profile", "Uploading"];
 }
 
 function getStepContent(stepIndex,setActiveStep) {
   switch (stepIndex) {
     case 0:
-      return <EncodingForm setActiveStep={setActiveStep}/>;
+      return <PersonalInformation setActiveStep={setActiveStep}/>;
 
     case 1:
-      return `Integer euismod dapibus sapien, a interdum augue blandit eget. Donec pellentesque, sapien iaculis dignissim sagittis, risus nulla auctor eros, sed suscipit eros mauris id lorem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer porttitor mauris egestas consequat molestie. Nam egestas iaculis malesuada. Praesent sagittis venenatis finibus. Praesent porttitor ipsum et sapien cursus, eu mattis augue ornare.`;
+      return <FarmProfile setActiveStep={setActiveStep}/>;
 
     case 2:
       return `In laoreet, dui vel tristique facilisis, velit dui dictum diam, nec feugiat mi mauris eu nunc. Nullam auctor eget ante ac laoreet. Aliquam et ante ligula. Nam imperdiet augue magna, ac tincidunt neque mollis nec. Sed eu nunc sit amet tellus commodo elementum non sit amet sem. Etiam ipsum nibh, rutrum vel ultrices in, vulputate ac dolor. Morbi dictum lectus id orci dapibus, et faucibus nulla viverra. Nulla consectetur ex vitae pretium vehicula. Quisque varius tempor erat et semper. Vivamus consectetur, eros sit amet ornare facilisis, nulla felis laoreet tortor, sit amet egestas risus ipsum sed eros.`;
@@ -98,7 +98,7 @@ const Encoding = () => {
   const {data,options} = state;
 
   
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const steps = getSteps();
   const handleNext = () => {
     
@@ -138,17 +138,17 @@ const Encoding = () => {
       <Box mt={4}>
         {activeStep === steps.length ? (
           <Box>
-            {/* <Typography>All steps completed</Typography> */}
+            
 
             <Button sx={{ mt: 2 }} variant="contained" color="secondary" onClick={handleReset}>
               Reset
             </Button>
           </Box>
         ) : (
-          <Box>
+          <Grid>
             {getStepContent(activeStep,setActiveStep)}
 
-            <Box pt={2}>
+            <Grid pt={2}  justifyContent="right" container>
               <Button
                 variant="contained"
                 color="secondary"
@@ -161,8 +161,8 @@ const Encoding = () => {
               <Button sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleNext}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
         )}
       </Box>        
         

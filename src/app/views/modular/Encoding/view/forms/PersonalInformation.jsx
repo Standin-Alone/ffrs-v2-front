@@ -48,9 +48,9 @@ const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold',   }}
 const inputLabelProps = { style: { fontWeight:'bold',   } };
 
 
-export const EncodingForm = (props)=>{
+export const PersonalInformation = (props)=>{
   
-    const refAddress = useRef([]);
+    
     const [state, setState] = useState({ 
         date: new Date(),
         regions:[],
