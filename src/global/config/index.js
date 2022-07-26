@@ -2,16 +2,17 @@ var ip = require('ip');
 
 let getIp = ip.address() // my ip address
 const ACCESS_POINT =  `http://${getIp}:9002`;
+const ACCESS_POINT_PROD =  `http://${getIp}:9002`;
 
 const Config = {
     // 0 => Devlopment env, 1 => Production env
-    APP_MODE: 0,
+    APP_MODE: 1,
     DEVELOPMENT: {        
         ACCESS_POINT:ACCESS_POINT
     },
     PRODUCTION: {
         
-        ACCESS_POINT:ACCESS_POINT
+        ACCESS_POINT:ACCESS_POINT_PROD
     },
 };
 

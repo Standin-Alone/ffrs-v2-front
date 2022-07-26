@@ -19,20 +19,6 @@ const data = require.context("app/views/modular", true, /\index.js$/, 'lazy');
 
 
 
-
-// Promise.all(
- 
-// ).then(res=>{
-
-//   res.map((item)=>{
-    
- 
-//   })
-
-  
-
-// });
-
 data.keys().map((item)=>{
   const cleanModule = item.substring(item.indexOf('./') + 1);
   

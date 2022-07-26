@@ -102,9 +102,21 @@ const Users = () => {
                      
           :
           <SimpleCard className="bg-primary">          
+                
+              <Box sx={{width:'100%'}}>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
+              <Skeleton height={50}/>
 
-              <Skeleton variant="rectangular" width={210} height={118} />
-
+              
+              </Box>
             {/* <div  style={{alignContent:'center',alignSelf:'center',justifyContent:'center',display:'flex'}} b>
               <CircularProgress className="progress" color="success" />
             </div> */}

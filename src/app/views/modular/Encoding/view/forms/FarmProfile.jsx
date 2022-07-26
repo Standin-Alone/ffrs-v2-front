@@ -10,13 +10,18 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TableBody
+  TableBody,
+  Tooltip,
+  Icon,
+  Button
 } from "@mui/material";
 import {SimpleCard } from "app/components";
-import { colors } from "app/components/MatxTheme/themeColors";
+import { colors, themeColors } from "app/components/MatxTheme/themeColors";
+import { object } from "prop-types";
 import { useEffect, useState } from "react";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import NumberFormat from 'react-number-format';
+import { styles } from "../style";
 
 
 
@@ -42,7 +47,6 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
     
 })});
 
-
 const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold',   }};
 const inputLabelProps = { style: { fontWeight:'bold',   } };
 
@@ -50,8 +54,33 @@ const inputLabelProps = { style: { fontWeight:'bold',   } };
 export const FarmProfile = (props)=>{
   
     
-    const [state, setState] = useState({   });
+    const [state, setState] = useState({ 
+      parcel:[{
+        farmNumber:1,
+        farmLandDescription:{
+            province:'',
+            municipality:'',
+            barangay:'',
+            totalFarmArea:'',
+            ownership:'',
+            typeOfOwnership:'',
+            ARB:'',
+            ancestralDomain:'',
+            farmerName:'',
+        },
+        parcelInfo:[{
+          crop:'',  
+          size:'',
+          noOfHead:'',
+          farmType:'',
+          organicPractitioner:'',
+          remarks:''
+        }]
+      }]
   
+      });
+      
+      let myDiv = '';
       const {
         isFarmer,        
         isRice,
@@ -94,12 +123,17 @@ export const FarmProfile = (props)=>{
         farmingIncome,
         nonFarmingIncome,
 
-        livelihoodType
+        
+        //  PARCEL 
+        numberOfFarmParcel,
+        nameOfFarmersInRotation,
+        
+
       } = state;
     
 
     useEffect(async ()=>{
-              
+      
     },[])
     
 
@@ -121,6 +155,12 @@ export const FarmProfile = (props)=>{
       setState({ ...state, [event.target.name]: event.target.value });
     };
 
+    const handleChangeFarmDescription = (event) => {
+      event.persist();
+      
+      setState({ ...state, [event.target.name]: event.target.value });
+    };
+
     const handleCheckboxChange = (event) => {
       event.persist();
       
@@ -128,9 +168,68 @@ export const FarmProfile = (props)=>{
     };
 
 
+    const handleAddParcel = ()=>{
+
+      let parcelCount = state.parcel.length + 1;
     
 
+      // add new parcel;
+      setState({ ...state, parcel:[...state.parcel,{
+        farmNumber:parcelCount,
+        farmLandDescription:{
+            province:'',
+            municipality:'',
+            barangay:'',
+            totalFarmArea:'',
+            ownership:'',
+            typeOfOwnership:'',
+            ARB:'',
+            ancestralDomain:'',
+            farmerName:'',
+        },
+        parcelInfo:[{
+          crop:'',  
+          size:'',
+          noOfHead:'',
+          farmType:'',
+          organicPractitioner:'',
+          remarks:''
+        }]
+      }]});
 
+    }
+
+
+    // ADD PARCEL INFO
+    const handleAddParcelInfo = (farmNumber)=>{
+      
+     
+      
+      setState({ ...state, parcel:state.parcel.map((item)=>{
+                    if(item.farmNumber == farmNumber){
+                        item.parcelInfo = [...item.parcelInfo,{  
+                        crop:'',  
+                        size:'',
+                        noOfHead:'',
+                        farmType:'',
+                        organicPractitioner:''}];
+                    }
+                    return item
+          })
+      })
+    }
+
+    // REMOVE PARCEL INFO
+    const handleRemoveParcelInfo = (farmNumber)=>{
+     
+      setState({ ...state, parcel:state.parcel.map((item)=>{
+                    if(item.farmNumber == farmNumber){
+                        item.parcelInfo = item.parcelInfo.splice(1);
+                    }
+                    return item
+          })
+      })
+    }
 
     return(
 
@@ -163,16 +262,16 @@ export const FarmProfile = (props)=>{
                 <TableContainer >
                   <Table sx={{ minWidth: 650 }} aria-label="simple table" style={{border: '2px solid #ddd'}}>
                     <TableHead>
-                      <TableRow style={{border: '1px solid #ddd'}} >
+                      <TableRow style={styles.tableHeader} >
                         {/* FOR FARMER CELL */}
-                        <TableCell align="center" style={{border: '1px solid #ddd'}} >
+                        <TableCell align="center" style={styles.tableHeader} >
                           <Typography variant="subtitle1" style={{fontWeight:'bold'}}>
                             For Farmers:
                           </Typography>                                                                                             
                         </TableCell>
 
                         {/* FOR FARMWORKERS CELL */}
-                        <TableCell align="center" style={{border: '1px solid #ddd'}} >
+                        <TableCell align="center" style={styles.tableHeader} >
                           <Typography variant="subtitle1" style={{fontWeight:'bold'}}>
                               For Farmworkers:
                           </Typography>                             
@@ -182,13 +281,13 @@ export const FarmProfile = (props)=>{
                         {/* FOR FISHERFOLK CELL */}
 
                      
-                        <TableCell align="center" style={{border: '1px solid #ddd'}} >                   
+                        <TableCell align="center" style={styles.tableHeader} >                   
                             <Typography variant="subtitle1" style={{fontWeight:'bold'}}>
                                 For Fisherfolk:
                             </Typography>                                              
                         </TableCell>
 
-                        <TableCell align="center" style={{border: '1px solid #ddd'}} >
+                        <TableCell align="center" style={styles.tableHeader} >
                           <Typography   variant="subtitle1" style={{fontWeight:'bold'}}>
                             For Agri Youth:
                           </Typography>                            
@@ -433,15 +532,6 @@ export const FarmProfile = (props)=>{
                     </TableBody>
                   </Table>
                   </TableContainer>
-
-
- 
-
-                       
-
-                     
-
-                        
                 </div>     
                 
               <div style={{flexDirection:'row',display:'flex'}}>                                    
@@ -525,15 +615,425 @@ export const FarmProfile = (props)=>{
             <br></br>
             <br></br>
 
-            <SimpleCard title="Parcel" >        
+
+            {/* PARCEL CARD  */}
+            <SimpleCard title="Parcel" >   
+           
             <Grid container spacing={6}>            
               <Grid item lg={200} md={200} sm={12} xs={12} sx={{ mt: 2 }}>
+                
                   <div style={{flexDirection:'row',display:'flex'}}>                                    
                       <Grid container  lg={100} marginX={2}>
                         <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>   
+                          <NumberFormat
+                                value={numberOfFarmParcel || ""}                              
+                                displayType={'text'}
+                                allowedDecimalSeparators
+                                thousandSeparator={true}                                                   
+                                allowNegative={false}        
+                                
+                                renderText={(value, props) => 
+                                  <TextField
+                                  type="text"
+                                  name="numberOfFarmParcel"
+                                  label="Number of Farm Parcel:"
+                                  onChange={handleChange}
+                                  value={value || ""}
+                                  validators = {['required']}
+                                  errorMessages = {["this field is required"]}
+                                  InputLabelProps={inputLabelProps}           
+                                  inputProps={inputProps}                                                     
+                                />
+                                }
+                              />
                         </Grid>
                       </Grid>  
+
+                 
                   </div>
+                    
+               
+
+                     
+
+                      {state.parcel.map((item)=>(
+                      <>
+                      <div style={{flexDirection:'row',display:'flex'}} ref={(el)=>{myDiv = el}}>                                    
+                        {/* PARCEL TABLE START */}  
+                      <Grid container  lg={50} marginX={1}>
+                        <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>  
+                          <TableContainer >
+                            <Table  aria-label="simple table" style={{border: '2px solid #ddd'}}>
+                              <TableHead>
+                                <TableRow style={styles.tableHeader} >
+                                  <TableCell align="center"> 
+                                    Farm Parcel No.   
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    Farm Land Description
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+
+                              <TableBody>  
+                                <TableRow >
+                                    <TableCell align="center">
+                                    {item.farmNumber}
+                                    </TableCell>
+                                    
+                                    <TableCell align="center" > 
+                                    <Grid container  lg={100}  >
+                                        <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                                      <Grid container  lg={100}>
+                                        <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                          <TextField
+                                                type="text"
+                                                name="nameOfFarmersInRotation"
+                                                label="Location (Province):"
+                                                onChange={handleChange}
+                                                value={item.farmLandDescription.province|| ""}
+                                                validators = {['required']}
+                                                errorMessages = {["this field is required"]}
+                                                InputLabelProps={inputLabelProps}           
+                                                inputProps={inputProps}                                                     
+                                              />                                          
+                                        </Grid>
+                                      </Grid>
+                                        <div style={{flexDirection:'row',display:'flex'}}>
+                                          <Grid container  lg={100} >
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Location (Municipality):"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.municipality|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                          </Grid>
+
+                                          <Grid container  lg={100} marginX={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Location (Barangay):"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.barangay|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                          </Grid>
+                                        </div>
+
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Total Farm Area:"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.totalFarmArea|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Ownership:"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.ownership|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Type of Ownership:"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.typeOfOwnership|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="ARB:"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.ARB|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Ancestral Domain:"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.ancestralDomain|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid container  lg={100}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label="Farmer Name (Rotation):"
+                                                    onChange={handleChange}
+                                                    value={item.farmLandDescription.farmerName|| ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                        </Grid>
+                                      </Grid>
+                                    </TableCell>                                           
+                                  </TableRow>                    
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </Grid>
+                      </Grid>
+
+                      
+                      
+                      <Grid container  lg={100}>
+                        <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>  
+                          <TableContainer >
+                            <Table aria-label="simple table" style={{border: '2px solid #ddd'}}>
+                              <TableHead>
+                                <TableRow style={styles.tableHeader} >                            
+                                  <TableCell align="center">
+                                      Crop/Commodity 
+
+                                    <Tooltip title={`                                              
+                                            (Rice/Corn/HVC/Livestock/Poultry/Agri-fishery)                                            
+                                            For Livestock & Poultry                                        
+                                            (specify type of animal)`}>
+                                        <Icon color={"primary"} fontSize={"small"}>help</Icon>                                       
+                                    </Tooltip>
+                           
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    SIZE 
+                                    <Tooltip title={`(ha)`}>
+                                        <Icon color={"primary"} fontSize={"small"}>help</Icon>                                       
+                                  </Tooltip>                                  
+                                  </TableCell>
+
+
+                                  <TableCell align="center">
+                                    NO. OF HEAD                                                           
+                                    <Tooltip title={`(For Livestock and Poultry)`}>
+                                          <Icon color={"primary"} fontSize={"small"}>help</Icon>                                       
+                                    </Tooltip>
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    FARM TYPE
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    ORGANIC<br></br>PRACTITIONER
+                                  </TableCell>
+
+                                  <TableCell align="center">
+                                    REMARKS 
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+
+                              <TableBody>  
+                                {/* CROP COMMODITY  START*/}
+
+                                {item.parcelInfo.map((parcelItem)=>(
+
+
+                                
+                                
+                                <TableRow >
+                                    <TableCell align="center">
+                                        <Grid container   mx={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.crop || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>
+                                    <TableCell align="center" >
+                                        <Grid container   mx={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.size || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>   
+                                    <TableCell align="center" >
+                                        <Grid container   mx={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.noOfHead || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>   
+                                    <TableCell align="center" >
+                                        <Grid container   mx={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.farmType || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>   
+                                    <TableCell align="center" >
+                                        <Grid container   mx={2}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.organicPractitioner || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>   
+                                    <TableCell align="center" >
+                                        <Grid container  mx={3}>
+                                            <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>                                                 
+                                              <TextField
+                                                    type="text"
+                                                    name="nameOfFarmersInRotation"
+                                                    label=""
+                                                    onChange={handleChange}
+                                                    value={parcelItem.remarks || ""}
+                                                    validators = {['required']}
+                                                    errorMessages = {["this field is required"]}
+                                                    InputLabelProps={inputLabelProps}           
+                                                    inputProps={inputProps}                                                     
+                                                  />                                          
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>                                           
+                                  </TableRow>                    
+
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+
+                          {/* PARCEL INFO BUTTONS */}
+                          <div style={{flexDirection:'row',display:'flex',justifyContent:'flex-end'}}>
+                            <Grid container row  spacing={2} mt={2} justifyContent="flex-end">
+                              <Grid item >  
+                                <Button variant="outlined" color="success" onClick={()=>handleAddParcelInfo(item.farmNumber)}> <Icon>add_circle</Icon>Add</Button>
+                              </Grid>
+                              <Grid item >  
+                                <Button variant="outlined" color="error" onClick={()=>handleRemoveParcelInfo(item.farmNumber)}> <Icon>remove_circle</Icon> Remove</Button>
+                              </Grid>
+                             
+                            </Grid>
+                            
+                            
+                        </div>
+
+                        </Grid>
+                      </Grid>
+                     
+                        </div>
+                      </>
+                    ))}
+
+                    <div style={{flexDirection:'row',display:'flex'}}>
+                      <Grid container  lg={200} marginX={1} >
+                        <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>  
+                          <Button variant="outlined" color="success" onClick={handleAddParcel}> <Icon>add_circle</Icon>Add Parcel</Button>
+                        </Grid>
+                      </Grid>
+                  </div>
+
+                   
                 </Grid>  
               </Grid>  
             </SimpleCard>
