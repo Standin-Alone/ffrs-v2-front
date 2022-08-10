@@ -53,7 +53,7 @@ const Users = () => {
 
     }   
     
-    console.warn('l;oad')
+    
   const handleEdit = ()=>{
 
   }

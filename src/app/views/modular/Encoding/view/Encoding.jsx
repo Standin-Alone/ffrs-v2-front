@@ -15,6 +15,10 @@ import Stepper from "@mui/material/Stepper";
 import { PersonalInformation} from "./forms/PersonalInformation";
 import { FarmProfile} from "./forms/FarmProfile";
 
+import '../../../../../global/styles/style.css';
+import { Uploading } from "./forms/Uploading";
+
+
 
 const Container = styled("div")(({ theme }) => ({
     margin: "30px",
@@ -23,6 +27,7 @@ const Container = styled("div")(({ theme }) => ({
       marginBottom: "30px",
       [theme.breakpoints.down("sm")]: { marginBottom: "16px" },
     },
+    
   }));
 
 
@@ -32,6 +37,8 @@ function getSteps() {
 }
 
 function getStepContent(stepIndex,setActiveStep) {
+
+  console.warn(setActiveStep);
   switch (stepIndex) {
     case 0:
       return <PersonalInformation setActiveStep={setActiveStep}/>;
@@ -40,10 +47,7 @@ function getStepContent(stepIndex,setActiveStep) {
       return <FarmProfile setActiveStep={setActiveStep}/>;
 
     case 2:
-      return `In laoreet, dui vel tristique facilisis, velit dui dictum diam, nec feugiat mi mauris eu nunc. Nullam auctor eget ante ac laoreet. Aliquam et ante ligula. Nam imperdiet augue magna, ac tincidunt neque mollis nec. Sed eu nunc sit amet tellus commodo elementum non sit amet sem. Etiam ipsum nibh, rutrum vel ultrices in, vulputate ac dolor. Morbi dictum lectus id orci dapibus, et faucibus nulla viverra. Nulla consectetur ex vitae pretium vehicula. Quisque varius tempor erat et semper. Vivamus consectetur, eros sit amet ornare facilisis, nulla felis laoreet tortor, sit amet egestas risus ipsum sed eros.`;
-
-    default:
-      return `Aenean arcu ligula, porttitor id neque imperdiet, congue convallis erat. Integer libero sapien, convallis a vulputate vel, pretium vulputate metus. Donec leo justo, viverra ut tempor commodo, laoreet eu velit. Donec vel sem quis velit pharetra elementum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam in commodo mauris. Ut iaculis ipsum velit.`;
+      return <Uploading setActiveStep={setActiveStep}/>
   }
 }
 
@@ -101,16 +105,28 @@ const Encoding = () => {
   const [activeStep, setActiveStep] = useState(1);
   const steps = getSteps();
   const handleNext = () => {
-    
+
       if(activeStep == 0){
          document.getElementById('step-1-submit-button').click();
+      }else if(activeStep == 1){
+        document.getElementById('step-2-submit-button').click();
+        // setActiveStep((prevActiveStep) => prevActiveStep + 1)
+      }else if(activeStep == 2){
+
+        
+        document.getElementById('step-3-submit-button').click();
+        
       }
-    // setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    
   };
 
-  const handleBack = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleBack = () => {
+    
+      
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  };
 
-  const handleReset = () => setActiveStep(0);
+  const handleReset = () => setActiveStep(2);
 
   return (
 
@@ -124,7 +140,7 @@ const Encoding = () => {
     <br/>
     <br/>
     
-    <Stack spacing={3}>
+    <Stack spacing={3} className="sample">
                 
     <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label) => (

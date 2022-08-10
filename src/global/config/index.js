@@ -1,6 +1,7 @@
 var ip = require('ip');
 
-let getIp = ip.address() // my ip address
+// let getIp = ip.address() // my ip address
+let getIp = '172.17.150.188' // my ip address
 const ACCESS_POINT =  `http://${getIp}:9002`;
 const ACCESS_POINT_PROD =  `http://${getIp}:9002`;
 

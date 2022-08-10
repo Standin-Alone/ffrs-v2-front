@@ -134,10 +134,10 @@ export const AuthProvider = ({ children }) => {
             try {
                 
 
-                console.warn('AUTH CONTEXT')
-                const accessToken = window.localStorage.getItem('accessToken')
-                // && isValidToken(accessToken)
                 
+                const accessToken = window.localStorage.getItem('accessToken')
+                
+                // && isValidToken(accessToken) 
                 if (accessToken ) {
                   
                     setSession(accessToken)

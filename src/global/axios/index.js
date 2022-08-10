@@ -14,8 +14,7 @@ const POST = async (
 const GET = async (
 url    
 )=>{
-    const result = await axios.get(`${getBaseUrl().ACCESS_POINT}${url}`);
-    console.warn(result);
+    const result = await axios.get(`${getBaseUrl().ACCESS_POINT}${url}`);    
     return result;
 }   
 

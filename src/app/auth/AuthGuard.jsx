@@ -24,7 +24,7 @@ const AuthGuard =  ({ children }) => {
     const routes = flat(AllPages);
     
       
-    console.warn(`routes`,  children)
+    
     const hasPermission = userHasPermission(pathname, user, routes);
     let authenticated = isAuthenticated;
    

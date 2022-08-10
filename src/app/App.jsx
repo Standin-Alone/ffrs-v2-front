@@ -11,7 +11,7 @@ const App = () => {
 
   
   const content = useRoutes(routes);
-  console.warn('URL',window.location.href);
+  
   return (
     <Provider store={Store}>
       <SettingsProvider>

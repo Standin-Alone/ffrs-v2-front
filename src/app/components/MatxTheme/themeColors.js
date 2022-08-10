@@ -12,7 +12,13 @@ export const colors = {
   disabled: 'rgba(52, 49, 76, 0.38)',
   hint: 'rgba(52, 49, 76, 0.38)',
   darkTint:'rgba(0,0,0,0.5)',
-  bgGray :'#ececec'
+  bgGray :'#ececec',
+  light :'#ffffff',
+  danger:'#D9534F',
+  textDarkTint:'#545a64',
+  warning:'#FFD700',
+  warningTint:'#ffed89',
+  greenTint:'#cafbb8'
 };
 
 export const textDark = {

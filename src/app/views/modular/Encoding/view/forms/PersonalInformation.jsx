@@ -1,6 +1,4 @@
-import { DatePicker } from "@mui/lab";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
+
 import {
   Button,  
   Divider,
@@ -8,17 +6,32 @@ import {
   Autocomplete,
   styled,
   Typography,  
+  CircularProgress
 } from "@mui/material";
 import {SimpleCard } from "app/components";
 import { colors } from "app/components/MatxTheme/themeColors";
 import InputMask from 'react-input-mask';
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState } from "react";
+import { ScrollMenu } from 'react-horizontal-scrolling-menu';
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import constants from "global/constants";
 import moment from 'moment';
 import {  loadProvinces, loadRegions,loadMunicipality,loadBarangay, step1FormAction } from "../../actions/actions";
 import { GET_SESSION } from "global/async_storage";
+import { personalInformationValidation } from "./validations/validations";
+import {Fade} from 'react-reveal';
+import MUIDataTable from "mui-datatables";
 
+const styles = {
+  farmerImage:{
+    width:'100%',
+    height:'100%'
+  }
+}
+
+const datatableOptions = {
+  rowsPerPage: 3,
+}
 
 
 const TextField = styled(TextValidator)((textValidatorProps) => {
@@ -28,8 +41,10 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
     marginBottom: "16px",   
     backgroundColor:colors.bgGray,   
     '& input:valid + fieldset': {
-      borderColor:  textValidatorProps.value ? 'green' : '#ddd',      
-      color: textValidatorProps.value ? 'green' : '#ddd',
+      borderColor:  textValidatorProps.value ? 'green' : '#ddd',
+      
+      backgroundColor: textValidatorProps.value ? colors.greenTint : '#ddd',
+      
       
     },
     '& input:invalid + fieldset': {
@@ -44,14 +59,19 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
 })});
 
 
-const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold',   }};
+const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold', zIndex:1  }};
 const inputLabelProps = { style: { fontWeight:'bold',   } };
 
 
 export const PersonalInformation = (props)=>{
-  
+
     
     const [state, setState] = useState({ 
+        duplications:[],
+        findingDuplicates:false,
+        showPossibleDuplicate:true,
+        // regionMask:"\\0\\3",
+        regionMask:"\\0\\3",
         date: new Date(),
         regions:[],
         provinces:[],
@@ -59,7 +79,7 @@ export const PersonalInformation = (props)=>{
         barangays:[],
         
 
-    
+        referenceNumber:'03010101010000',
         // surName:"CERVANTES",
         // firstName: "LEA MAE",        
         // gender:1, 
@@ -102,6 +122,10 @@ export const PersonalInformation = (props)=>{
         address4,
         address5,
         address6,
+
+        // VERTICAL PAGE 1
+
+
         mobileNumber,
         landlineNumber,
         birthday,
@@ -148,15 +172,20 @@ export const PersonalInformation = (props)=>{
         return true          
       });
 
+
+      // VALIDATIONS
+      personalInformationValidation(setState);
+
       ValidatorForm.addValidationRule("date", (value) => {
         
-        let date = moment(value,"DD/MM/YYYY");        
+        let date = moment(value,"MM/DD/YYYY");        
         
         if (!date.isValid())return false;
 
         return true          
       });
 
+      
       
       let getDraftedPersonalInformation =  JSON.parse(localStorage.getItem('PERSONAL_INFORMATION'));
                   
@@ -203,8 +232,10 @@ export const PersonalInformation = (props)=>{
     
     const handleChange = (event) => {
       event.persist();      
-      console.log('CHANGE',address1);
-      setState({ ...state, [event.target.name]: event.target.value });
+      
+       
+
+      setState({ ...state, [event.target.name]: typeof event.target.value === 'string' ?  event.target.value.toUpperCase() : event.target.value });
     };
 
 
@@ -224,11 +255,12 @@ export const PersonalInformation = (props)=>{
         loadProvinces(parameter,state,setState);
         
       }else if(getName == 'address2'){
-        console.warn(state);
+        
         let parameter = {
           regionCode:state.address1,
           provinceCode:value,
-          value:{[getName]: value}
+          value:{[getName]: value},
+            
         }
 
         loadMunicipality(parameter,state,setState);
@@ -238,7 +270,8 @@ export const PersonalInformation = (props)=>{
           regionCode:state.address1,
           provinceCode:state.address2,
           municipalityCode:value,
-          value:{[getName]: value}
+          value:{[getName]: value},
+            
         }
 
         loadBarangay(parameter,state,setState);
@@ -264,23 +297,107 @@ export const PersonalInformation = (props)=>{
         <Grid>
 
           <ValidatorForm onSubmit={handleSubmit} onError={() => null} id="step-1-form" >
-        <InputMask
-            mask="99-99-99-999-999999"
-            type="text"
-            name="referenceNumber"
-            label="Reference Number"
-            onChange={handleChange}
-            value={referenceNumber || ""}            
-            inputProps={inputProps}       
-            disabled={false}
-            maskChar=" "
-            variant="standard"      
-          >
+          
+        <SimpleCard>
+            <InputMask                
+                aria-describedby={'referenceNumber'}
+                mask={`99-99-99-999-999999`}
+                type="text"
+                name="referenceNumber"
+                label="Reference Number"
+                onChange={handleChange}
+                value={referenceNumber || ""}            
+                inputProps={inputProps}       
+                InputLabelProps={inputLabelProps}
+                disabled={false}
+                maskChar=" "
+                variant="standard"                                                  
+                validators={["required",'checkDuplication']}
+                errorMessages={["this field is required",'']}
+            >
             {(inputProps)=><TextField
-                {...inputProps}                        
+                {...inputProps}                     
+              
             />}
-          </InputMask>
+          </InputMask>  
 
+          {/* SHOW DUPLICATIONS HERE */}
+
+          {state.duplications.length > 0 ?
+
+              <MUIDataTable
+                  title={"Duplicated Data"}
+                  data={state.duplications}  
+                  columns={[{
+                    name: "FULL_NAME",
+                    label:' ',
+                    options:{
+                      customBodyRenderLite: (duplicateItem,index)=>(                          
+                            <div key={index}>
+                            <Fade  left>                         
+                                {
+                                  state.duplications[index].SEX == 1 ?
+                                    <div>
+                                      <Fade  >
+                                        <div style={{width:'40%',height:'100%'}}>
+                                          <img src={`/assets/images/farmer/male-farmer.png` } style={styles.farmerImage}/>
+                                        </div>
+                                      </Fade>
+                                    </div>
+                                    :
+                                    <div>
+                                      <Fade >
+                                        <div style={{width:'40%',height:'100%'}}>
+                                          <img src={ `/assets/images/farmer/female-farmer.png` } style={styles.farmerImage}/>
+                                        </div>                          
+                                      </Fade>
+                                    </div> 
+                                }                                                                  
+                                
+                              </Fade>
+                            </div>
+
+                      )
+                    }                  
+                  },{
+                    name: "FULL_NAME",
+                    label:'Name',
+                  },{
+                    name: "CONTROL_NO",
+                    label:'Control Number',
+                  },
+                  {
+                    name: "RSBSA_NO",
+                    label:'RSBSA Number',
+                  },
+                  {
+                    name: "MOTHER_MAIDEN_NAME",
+                    label:"Mother's Maiden Name",
+                  }]}      
+                  
+                  options={datatableOptions}
+
+              />  
+
+      
+           :
+            state.findingDuplicates == true ? 
+            <Grid container  lg={100} marginX={2} >
+              <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+              <CircularProgress className="progress" color="info" size={20}/> Finding Duplicates
+              </Grid>
+            </Grid>
+            :
+            <Grid container  lg={100} marginX={2} >
+              <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                  No Current Duplication
+              </Grid>
+            </Grid>
+          } 
+          
+
+        </SimpleCard>
+        <br></br>
         <SimpleCard title="Personal Information">
         
         
@@ -298,8 +415,8 @@ export const PersonalInformation = (props)=>{
                     label="SURNAME"                                        
                     onChange={handleChange}                                        
                     value={surName}                    
-                    validators={["required"]}
-                    errorMessages={["this field is required"]}              
+                    validators={["required",'letterDashOnly']}
+                    errorMessages={["this field is required",'Please enter letter, space & dash only..']}
                     error={false}
                     InputLabelProps={inputLabelProps}
                     inputProps={inputProps}                                        
@@ -316,8 +433,8 @@ export const PersonalInformation = (props)=>{
                     label="FIRST NAME"
                     onChange={handleChange}
                     value={firstName}
-                    validators={["required"]}
-                    errorMessages={["this field is required"]}
+                    validators={["required",'letterDashOnly']}
+                    errorMessages={["this field is required",'Please enter letter, space & dash only..']}
                     InputLabelProps={inputLabelProps}
                     inputProps={inputProps}
                   />
@@ -334,7 +451,9 @@ export const PersonalInformation = (props)=>{
                     name="middleName"
                     label="MIDDLE NAME"
                     onChange={handleChange}
-                    value={middleName}         
+                    value={middleName}        
+                    validators={['letterDashOnly']}
+                    errorMessages={['Please enter letter, space & dash only..']} 
                     InputLabelProps={inputLabelProps}           
                     inputProps={inputProps}                    
                   />
@@ -349,6 +468,8 @@ export const PersonalInformation = (props)=>{
                     label="EXTENSION NAME"
                     onChange={handleChange}
                     value={extensionName}
+                    validators={['letterDashOnly']}
+                    errorMessages={['Please enter letter, space & dash only..']} 
                     InputLabelProps={inputLabelProps}           
                     inputProps={inputProps}
                     
@@ -367,7 +488,7 @@ export const PersonalInformation = (props)=>{
                     onChange={handleChange}
                     value={gender }
                     validators = {['required','matchRegexp:^[1-2]$']}
-                    errorMessages = {["this field is required",'Please set 1 and 0 only.']}
+                    errorMessages = {["this field is required",'Please set 1 or 2 only.']}
                     InputLabelProps={inputLabelProps}           
                     inputProps={inputProps}                    
                   />
@@ -386,7 +507,7 @@ export const PersonalInformation = (props)=>{
           
             <div style={{flexDirection:'row',display:'flex'}}>
               <Typography >
-                Address ${`${address1}`}
+                Address
               </Typography>
               
               <Grid container  lg={100} marginX={2}>
@@ -403,16 +524,19 @@ export const PersonalInformation = (props)=>{
                       getOptionLabel={(option) =>option.label}                      
                       onChange={handleSelectChange}    
                       
-                                                                                                                                                                         
+                 
+                      
+                      
                       renderInput={(params) => 
                         <TextField
                         {...params}    
                         InputLabelProps={inputLabelProps}           
-                        inputProps={{...params.inputProps,inputProps}}                                               
+                                                                       
                         label="REGION"                         
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                                                                                        
-                        value={address1}     
+                        value={address1}                             
+                        
                       />}
                     />
                   
@@ -437,7 +561,8 @@ export const PersonalInformation = (props)=>{
                       renderInput={(params) => 
                         <TextField
                         {...params}                                                           
-                        InputLabelProps={inputLabelProps}           
+                        InputLabelProps={inputLabelProps} 
+                                                                                 
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                        
                         label="PROVINCE"                         
@@ -465,7 +590,8 @@ export const PersonalInformation = (props)=>{
                         <TextField
                         {...params}                                                           
                         label="MUNICIPALITY" 
-                        InputLabelProps={inputLabelProps}                                   
+                        InputLabelProps={inputLabelProps}   
+                                                                                                       
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                                                      
                         value={address3}
@@ -505,7 +631,9 @@ export const PersonalInformation = (props)=>{
                         <TextField
                         {...params}                                                           
                         label="BARANGAY" 
-                        InputLabelProps={inputLabelProps}                                   
+                        InputLabelProps={inputLabelProps}  
+                        
+                         
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                                                                              
                         id="address4"         
@@ -515,7 +643,7 @@ export const PersonalInformation = (props)=>{
                     </Grid>
                   </Grid>  
               
-
+                    
               <Grid container  lg={100} marginX={2}>
                   <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
                   <TextField
@@ -626,7 +754,7 @@ export const PersonalInformation = (props)=>{
                         mask="99/99/9999"
                         type="text"
                         name="birthday"
-                        label="Birthday (DD/MM/YYYY)"
+                        label="Birthday (MM/DD/YYYY)"
                         onChange={handleChange}
                         
                         validators = {['isValidAge','required','date']}                        
@@ -806,7 +934,7 @@ export const PersonalInformation = (props)=>{
                             inputProps={inputProps}                          
                           />
                           <Typography>
-                             ( 1-YES, 2-NO)
+                             (1-YES, 2-NO)
                           </Typography>
                         </Grid>
                     </Grid>              
@@ -864,9 +992,7 @@ export const PersonalInformation = (props)=>{
                                 InputLabelProps={inputLabelProps}           
                                 inputProps={inputProps}                          
                               />
-                              <Typography>
-                                ( 1-YES, 2-NO)
-                              </Typography>
+                         
                             </Grid>
                         </Grid>              
                       </div>
@@ -1135,8 +1261,8 @@ export const PersonalInformation = (props)=>{
                               label="PERSON TO NOTIFY IN CASE OF EMERGENCY?"
                               onChange={handleChange}
                               value={personToNotifyInCaseOfEmergency}
-                              validators = {['required']}
-                              errorMessages = {['"this field is required']}
+                              validators={["required",'letterDashOnly']}
+                              errorMessages={["this field is required",'Please enter letter, space & dash only..']}
                               InputLabelProps={inputLabelProps}           
                               inputProps={inputProps}                          
                             />
