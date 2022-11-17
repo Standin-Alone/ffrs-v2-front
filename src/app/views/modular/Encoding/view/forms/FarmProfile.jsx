@@ -14,12 +14,13 @@ import {
   Tooltip,
   Icon,
   Button,
-  Autocomplete
+  Autocomplete,
+  createFilterOptions
 } from "@mui/material";
-import {SimpleCard,ConfirmationDialog } from "app/components";
+import {SimpleCard } from "app/components";
 import { colors } from "app/components/MatxTheme/themeColors";
 import { GET_SESSION } from "global/async_storage";
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState,useRef, createRef} from "react";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import NumberFormat from 'react-number-format';
 import {  loadProvinces,loadMunicipality,loadBarangay,step2FormAction, loadCrops } from "../../actions/actions";
@@ -28,7 +29,6 @@ import ConfirmDialog from "app/views/material-kit/dialog/ConfirmDialog";
 
 
 const TextField = styled(TextValidator)((textValidatorProps) => {
-
   return ({
     width: "100%",
     marginBottom: "16px",   
@@ -45,8 +45,7 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
     '& input:valid:focus + fieldset': {
       borderLeftWidth: 6,
       padding: '4px !important', // override inline-style
-    },
-    
+    },    
 })});
 
 
@@ -56,7 +55,7 @@ const inputLabelProps = { style: { fontWeight:'bold',   } };
 
 
 export const FarmProfile = (props)=>{
-  
+    const scrollDiv = createRef();
     const cropSizeRef  = useRef(null);
     const [state, setState] = useState({ 
       confirmationDialog:{
@@ -309,7 +308,7 @@ export const FarmProfile = (props)=>{
     
 
       // add new parcel;
-      setState({ ...state, parcel:[...state.parcel,{
+      setState(prevState=>({...prevState, parcel:[...prevState.parcel,{
         farmNumber:parcelCount,
         farmLandDescription:{
             province:'',
@@ -331,30 +330,41 @@ export const FarmProfile = (props)=>{
         }]
       }],
       numberOfFarmParcel:parcelCount
-      });
+      }));
 
+      console.warn(scrollDiv);
+      // if(scrollDiv.current){
+      //   scrollDiv.current.scrollIntoView({ behavior: "smooth" });
+      // }
+      
     }
 
 
     // ADD PARCEL INFO
-    const handleAddParcelInfo = async (farmNumber)=>{
+    const handleAddParcelInfo =  (farmNumber)=>{
    
 
-    
+
+
+
       
       setState((prevState)=>({...prevState, parcel:prevState.parcel.map((item)=>{
-        if(item.farmNumber == farmNumber){
-            item.parcelInfo = [...item.parcelInfo,{  
-            crop:'',  
-            size:'',
-            noOfHead:'',
-            farmType:'',
-            organicPractitioner:''}];
-        }
-        return item
+            if(item.farmNumber == farmNumber){
+                item.parcelInfo = [...item.parcelInfo,{  
+                crop:'',  
+                size:'',
+                noOfHead:'',
+                farmType:'',
+                organicPractitioner:''}];
+            }
+            return item
+        })
+
+
       })
-    })
         )
+
+      return true
   
     }
 
@@ -901,7 +911,7 @@ export const FarmProfile = (props)=>{
 
                       {state.parcel.map((item,index)=>(
                       <>
-                      <div style={{flexDirection:'row',display:'flex'}} key={index}>                                    
+                      <div style={{flexDirection:'row',display:'flex'}} key={index} ref={scrollDiv}>                                    
                         {/* PARCEL TABLE START */}  
                       <Grid container  lg={70} marginX={1}>
                         <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>  
@@ -1193,12 +1203,17 @@ export const FarmProfile = (props)=>{
                                                    <Autocomplete               
                                                       disablePortal
                                                       defaultValue={parcelItem.crop}
+
+                                                      // filterOptions = {
+                                                      //   createFilterOptions({
+                                                      //     matchFrom: 'start',
+                                                      //     stringify: (option) => option.title,
+                                                      //   })
+                                                      // }                                                      
                                                       options={state.crops.filter(  (crop)=>{
                                                         // CONTINUE HERE
-                                                        let getParcelJson = state.parcel.filter((val,parcelIndex)=>parcelIndex == index)[0];
-                                                        
-                                                        console.warn(`${parcelItemKey}`,`${crop.label}`,getParcelJson.parcelInfo.some((item,index)=> index != parcelItemKey && item.crop.id != crop.id ));
-                                                        
+                                                        let getParcelJson = state.parcel.filter((val,parcelIndex)=>parcelIndex == index)[0];                                                                                                                
+                                                     
                                                         return    getParcelJson.parcelInfo.some((item)=> item.crop?.id !== crop.id);
                                                       })}          
                                                       

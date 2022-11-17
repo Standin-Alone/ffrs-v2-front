@@ -93,16 +93,23 @@ export const AuthProvider = ({ children }) => {
             username:email,
             password:password,
         })
-        const { accessToken, user } = response.data
+        const { accessToken, user, status} = response.data
 
-        setSession(accessToken)
+
+        if(status == true){
+            setSession(accessToken)
+            dispatch({
+                type: 'LOGIN',
+                payload: {
+                    user,
+                },
+            })
+        }else{
+
+        }
         
-        dispatch({
-            type: 'LOGIN',
-            payload: {
-                user,
-            },
-        })
+        
+        
     }
 
     const register = async (email, username, password) => {
@@ -138,19 +145,30 @@ export const AuthProvider = ({ children }) => {
                 const accessToken = window.localStorage.getItem('accessToken')
                 
                 // && isValidToken(accessToken) 
-                if (accessToken ) {
+                if (accessToken   ) {
                   
                     setSession(accessToken)
                     const response = await axios.get(`${getBaseUrl().ACCESS_POINT}/auth/user-info/${accessToken}`)
-                    const { user } = response.data
-                
-                    dispatch({
-                        type: 'INIT',
-                        payload: {
-                            isAuthenticated: true,
-                            user,
-                        },
-                    })
+                    const { user,status} = response.data
+                    
+                    if(status == true){
+                        dispatch({
+                            type: 'INIT',
+                            payload: {
+                                isAuthenticated: true,
+                                user,
+                            },
+                        })
+                    }else{
+                        dispatch({
+                            type: 'INIT',
+                            payload: {
+                                isAuthenticated: false,
+                                user: null,
+                            },
+                        })
+                    }
+                    
                 } else {
                     dispatch({
                         type: 'INIT',

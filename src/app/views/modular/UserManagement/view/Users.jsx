@@ -28,16 +28,16 @@ const Users = () => {
   const [state, setState] = useState({
       data:[],
       columns:[{
-        name:'RSBSA_NO',
+        name:'rsbsa_no',
         label:'RSBSA Number'
       },{
-        name:'FIRST_NAME',
+        name:'first_name',
         label:'First Name'
       },{
-        name:'MIDDLE_NAME',
+        name:'middle_name',
         label:'Middle Name'
       },{
-        name:'SURNAME',
+        name:'surname',
         label:'LAST NAME'
       }],
       options:{

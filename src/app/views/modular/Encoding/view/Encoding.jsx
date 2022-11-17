@@ -38,7 +38,7 @@ function getSteps() {
 
 function getStepContent(stepIndex,setActiveStep) {
 
-  console.warn(setActiveStep);
+
   switch (stepIndex) {
     case 0:
       return <PersonalInformation setActiveStep={setActiveStep}/>;
@@ -102,7 +102,7 @@ const Encoding = () => {
   const {data,options} = state;
 
   
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const handleNext = () => {
 
@@ -153,9 +153,7 @@ const Encoding = () => {
 
       <Box mt={4}>
         {activeStep === steps.length ? (
-          <Box>
-            
-
+          <Box>            
             <Button sx={{ mt: 2 }} variant="contained" color="secondary" onClick={handleReset}>
               Reset
             </Button>
@@ -163,7 +161,6 @@ const Encoding = () => {
         ) : (
           <Grid>
             {getStepContent(activeStep,setActiveStep)}
-
             <Grid pt={2}  justifyContent="right" container>
               <Button
                 variant="contained"
@@ -173,15 +170,13 @@ const Encoding = () => {
               >
                 Back
               </Button>
-
               <Button sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleNext}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
             </Grid>
           </Grid>
         )}
-      </Box>        
-        
+      </Box>                
     </Stack>
   </Container>
      

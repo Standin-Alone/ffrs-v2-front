@@ -3,12 +3,14 @@ import { flat } from 'app/utils/utils';
 import { Navigate, useLocation } from 'react-router-dom';
 import AllPages from '../routes';
 
-const userHasPermission = (pathname, user, routes) => {
+const userHasPermission =  async (pathname, user, routes) => {
+  console.warn('USER PERMISSION',await routes);
   if (!user) {
     return false;
   }
-  const matched = routes.find((r) => r.path === pathname);
+  const asyncRoute  =  await routes;
   
+  const matched = asyncRoute.find((r) => r.path === pathname);
   const authenticated =
     matched && matched.auth && matched.auth.length ? matched.auth.includes(user.ROLE) : true;
   return authenticated;
@@ -20,7 +22,7 @@ const AuthGuard =  ({ children }) => {
     user
   } = useAuth();
   const { pathname } = useLocation();
-
+  
     const routes = flat(AllPages);
     
       

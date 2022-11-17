@@ -77,21 +77,28 @@ export const loadBarangay = (payload,state,setState)=>{
 
 }
 
-export const loadCrops = (state,setState)=>{ 
-    
-
-    GET(`/ffrs/get-crops`).then( (response)=>{
-        
-        
+export const loadCrops = (state,setState)=>{     
+    GET(`/ffrs/get-crops`).then( (response)=>{                
         setState((prevState)=>({...prevState,
             crops: response.data.data.map((item)=>({label:item.CROPNAME,id:item.CROP_ID,CLASS:item.CLASSIFICATION})),         
         }))
     }).catch((error)=>{
         console.log(error) 
-    });
-    
+    });    
+    return true
 }
 
+
+export const loadPobs = (state,setState)=>{ 
+    GET(`/ffrs/get-pobs`).then((response)=>{                            
+        
+        setState((prevState)=>({...prevState,
+                pobs:response.data.data.map((item)=>({label:item.POB,id:item.GEO_CODE,pobMunicipality:item.MUN_NAME,pobProvince:item.PROV_NAME})),               
+            }))        
+    }).catch((error)=>{
+        console.warn(error) 
+    });
+}
 
 
 export const checkDuplication = (value,setState)=>{ 
@@ -116,9 +123,7 @@ export const checkDuplication = (value,setState)=>{
 
 
 export const step1FormAction = (personalInformation,state)=>{ 
-
-    
-
+        
     SET_SESSION('PERSONAL_INFORMATION',personalInformation)
     
 }

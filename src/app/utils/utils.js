@@ -161,13 +161,23 @@ export function classList(classes) {
     .join(' ');
 }
 
-export const flat = (array) => {
+export const flat = async (array) => {
   var result = [];
-  array.forEach(function (a) {
-    result.push(a);
-    if (Array.isArray(a.children)) {
-      result = result.concat(flat(a.children));
-    }
-  });
+  
+  let arrayNew = [];
+  if (typeof array === 'function') {
+      arrayNew = await array();
+      result = arrayNew;
+  }else{
+    arrayNew = array;
+    arrayNew.forEach(function (a) {
+      result.push(a);
+      if (Array.isArray(a.children)) {
+        result = result.concat(flat(a.children));
+      }
+    });
+  }
+
+  
   return result;
 };

@@ -46,3 +46,27 @@ export const personalInformationValidation = (setState)=>{
 
 }
 
+
+
+
+export const farmerProfileValidation = (state)=>{
+    
+    ValidatorForm.addValidationRule("cropsChecker", (value) => {    
+        
+        console.warn(value);
+
+
+        if(state.parcel.map((parcelVal)=>{
+                parcelVal.some((parcelInfo) => parcelInfo.crop.id  == value.id)
+            }).length > 0){
+              return false;
+          }
+
+        
+        
+        return true          
+    });
+   
+
+}
+

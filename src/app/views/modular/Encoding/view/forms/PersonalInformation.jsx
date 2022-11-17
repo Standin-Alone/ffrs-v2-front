@@ -11,12 +11,12 @@ import {
 import {SimpleCard } from "app/components";
 import { colors } from "app/components/MatxTheme/themeColors";
 import InputMask from 'react-input-mask';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef,createRef } from "react";
 import { ScrollMenu } from 'react-horizontal-scrolling-menu';
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import constants from "global/constants";
 import moment from 'moment';
-import {  loadProvinces, loadRegions,loadMunicipality,loadBarangay, step1FormAction } from "../../actions/actions";
+import {  loadProvinces, loadRegions,loadMunicipality,loadBarangay, step1FormAction,loadPobs} from "../../actions/actions";
 import { GET_SESSION } from "global/async_storage";
 import { personalInformationValidation } from "./validations/validations";
 import {Fade} from 'react-reveal';
@@ -59,12 +59,17 @@ const TextField = styled(TextValidator)((textValidatorProps) => {
 })});
 
 
-const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold', zIndex:1  }};
+const inputProps = { style: { textTransform: "uppercase",fontWeight:'bold', zIndex:1,width:'100%'  }};
 const inputLabelProps = { style: { fontWeight:'bold',   } };
-
+const borderStyle = (value)=>({
+  "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+    border: `1px solid ${value ? 'green' : '#ddd'}`,
+  }
+})
 
 export const PersonalInformation = (props)=>{
 
+    
     
     const [state, setState] = useState({ 
         duplications:[],
@@ -73,6 +78,7 @@ export const PersonalInformation = (props)=>{
         // regionMask:"\\0\\3",
         regionMask:"\\0\\3",
         date: new Date(),
+        pobs:[],
         regions:[],
         provinces:[],
         municipalities:[],
@@ -80,33 +86,33 @@ export const PersonalInformation = (props)=>{
         
 
         referenceNumber:'03010101010000',
-        // surName:"CERVANTES",
-        // firstName: "LEA MAE",        
-        // gender:1, 
-        // mobileNumber:"9106120892",
+        surName:"CERVANTES",
+        firstName: "LEA MAE",        
+        gender:1, 
+        mobileNumber:"9106120892",
     
-        // birthday: "27/04/1995",
-        // pobMunicipality:"Caloocan City",
-        // pobProvince:"Metro Manila",
-        // pobCountry:"Philippines",
-        // religion: 1,
-        // civilStatus: 1,  
-        // mothersMaidenName:"NMMN",
-        // isHouseholdHead:1,                
-        // numberOfLivingHouseholdMembers:1,
-        // numberOfFemale:1,
-        // numberOfMale:1,
+        birthday: "27/04/1995",
+        pobMunicipality:"Caloocan City",
+        pobProvince:"Metro Manila",
+        pobCountry:"Philippines",
+        religion: 1,
+        civilStatus: 1,  
+        mothersMaidenName:"NMMN",
+        isHouseholdHead:1,                
+        numberOfLivingHouseholdMembers:1,
+        numberOfFemale:1,
+        numberOfMale:1,
 
 
 
-        // highestFormalEducation:1,
-        // personWithDisability: 2,
-        // fourPsBeneficiary:1,
-        // memberOfIndigenousGroup:2,        
-        // withGovernmentId: 2,                         
-        // memberOfFarmerAssocCooperative:2,        
-        // personToNotifyInCaseOfEmergency: "ZENAROSA",
-        // personToNotifyMobileNumber: "9106120892"
+        highestFormalEducation:1,
+        personWithDisability: 2,
+        fourPsBeneficiary:1,
+        memberOfIndigenousGroup:2,        
+        withGovernmentId: 2,                         
+        memberOfFarmerAssocCooperative:2,        
+        personToNotifyInCaseOfEmergency: "ZENAROSA",
+        personToNotifyMobileNumber: "9106120892"
       });
   
       const {
@@ -129,6 +135,7 @@ export const PersonalInformation = (props)=>{
         mobileNumber,
         landlineNumber,
         birthday,
+        pob,
         pobMunicipality,
         pobProvince,
         pobCountry,
@@ -162,6 +169,7 @@ export const PersonalInformation = (props)=>{
 
     useEffect(async ()=>{
 
+      
       ValidatorForm.addValidationRule("isValidAge", (value) => {
         let getDateNow = moment(new Date(),"DD/MM/YYYY");
         let birthday = moment(value,"DD/MM/YYYY");
@@ -197,17 +205,12 @@ export const PersonalInformation = (props)=>{
           setState(prevState => ({ ...prevState, [Object.keys(item) ]: Object.values(item)[0] }));
         })
 
-      }else{
-        
-        loadRegions(state,setState)
-      
+      }else{        
+        loadRegions(state,setState)      
       }
+        
+      loadPobs(state,setState)
       
-      
-
-          
-      
-
       
             
     },[])
@@ -408,8 +411,7 @@ export const PersonalInformation = (props)=>{
             <div style={{flexDirection:'row',display:'flex'}}>
               <Grid container  lg={100} marginX={2} >
                 <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
-                  <TextField
-               
+                  <TextField               
                     type="text"
                     name="surName"
                     label="SURNAME"                                        
@@ -514,24 +516,29 @@ export const PersonalInformation = (props)=>{
                   <Grid item lg={14} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
                   <Autocomplete
                       disablePortal             
-                      value={address1 || ''}       
-                      defaultValue={address1 || ''}
+                      value={address1 || null}       
+                      defaultValue={address1 || null}
                         
                       options={state.regions}                           
                       id="address1"                      
                       type="text"                      
                       label="REGION"                   
-                      getOptionLabel={(option) =>option.label}                      
+                      getOptionLabel={(option) =>{
+                       
+                        return option?.label}}                      
                       onChange={handleSelectChange}    
-                      
-                 
+                      sx={borderStyle(address1)}
                       
                       
                       renderInput={(params) => 
                         <TextField
                         {...params}    
-                        InputLabelProps={inputLabelProps}           
-                                                                       
+                        InputLabelProps={inputLabelProps}                                     
+                        InputProps={{
+                          ...params.InputProps,
+                          ...inputProps
+                        }}    
+                        style={{ backgroundColor: address1 ? colors.greenTint : '#ddd'}}                
                         label="REGION"                         
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                                                                                        
@@ -557,12 +564,18 @@ export const PersonalInformation = (props)=>{
                       onChange={handleSelectChange}                      
                       getOptionLabel={(option) => option && option.label}                      
                       value={address2 || ''}                
-                       
+                      sx={borderStyle(address2)}
                       renderInput={(params) => 
                         <TextField
                         {...params}                                                           
                         InputLabelProps={inputLabelProps} 
-                                                                                 
+                          
+                        InputProps={{
+                          ...params.InputProps,
+                          ...inputProps
+                        }}    
+                        style={{  backgroundColor: address2 ? colors.greenTint : '#ddd' ,  
+                        borderColor:  address2 ? 'green' : '#ddd'  }}                                                     
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                        
                         label="PROVINCE"                         
@@ -585,13 +598,18 @@ export const PersonalInformation = (props)=>{
                       label="MUNICIPALITY"
                       onChange={handleSelectChange}
                       value={address3 || ''}
-                      
+                      sx={borderStyle(address3)}
                       renderInput={(params) => 
                         <TextField
                         {...params}                                                           
                         label="MUNICIPALITY" 
-                        InputLabelProps={inputLabelProps}   
-                                                                                                       
+                        InputLabelProps={inputLabelProps}                               
+                        InputProps={{
+                          ...params.InputProps,
+                          ...inputProps
+                        }}    
+                        style={{ backgroundColor: address3 ? colors.greenTint : '#ddd' ,  
+                        borderColor:  address3 ? 'green' : '#ddd' }}                                                                                   
                         validators = {['required']}
                         errorMessages = {["this field is required"]}                                                      
                         value={address3}
@@ -626,19 +644,30 @@ export const PersonalInformation = (props)=>{
                       label="BARANGAY"
                       onChange={handleSelectChange}
                       value={address4 || ''}
-                      
+                      sx={borderStyle(address3)}                      
                       renderInput={(params) => 
                         <TextField
                         {...params}                                                           
                         label="BARANGAY" 
                         InputLabelProps={inputLabelProps}  
+                        style={{ 
+                          backgroundColor: address4 ? colors.greenTint : '#ddd',
+                           borderColor:  address4 ? 'green' : '#ddd',        
+                           textTransform:'uppercase'                  
+                          }}            
+                          
+                          
+                        InputProps={{
+                            ...params.InputProps,
+                            ...inputProps
+                        }}                          
                         
-                         
                         validators = {['required']}
-                        errorMessages = {["this field is required"]}                                                                              
+                        errorMessages = {["This field is required"]}                                                                              
                         id="address4"         
                         value={address4}               
-                      />}
+                      />
+                    }
                     />
                     </Grid>
                   </Grid>  
@@ -775,26 +804,41 @@ export const PersonalInformation = (props)=>{
                 </div>
 
                 <div style={{flexDirection:'row',display:'flex'}}>
-
-                  
-                    <Typography >
-                      Place of Birth
-                    </Typography>
-
+             
                     
                     <Grid container  lg={100} marginX={2}>
                         <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
-                        <TextField
-                          type="text"
-                          name="pobMunicipality"
-                          label="Municipality"
-                          onChange={handleChange}
-                          value={pobMunicipality}
-                          validators = {['required']}
-                          errorMessages = {["this field is required"]}
-                          InputLabelProps={inputLabelProps}           
-                          inputProps={inputProps}                          
-                        />
+                 
+                        
+                        <Autocomplete                                         
+                            value={pob || null}       
+                            defaultValue={pob || null}                              
+                            options={state.pobs.filter((item,index)=>index < 10000)}                           
+                            id="pob"                      
+                            type="text"                      
+                            label="Place of Birth"                   
+                            getOptionLabel={(option) =>{
+                              console.warn(option)
+                              return option?.label
+                            }}                      
+                            onChange={handleSelectChange}    
+                            sx={borderStyle(pob)}                                                        
+                            renderInput={(params) => 
+                              <TextField
+                              {...params}    
+                              InputLabelProps={inputLabelProps}                                     
+                              InputProps={{
+                                ...params.InputProps,
+                                ...inputProps
+                              }}    
+                              style={{ backgroundColor: pob ? colors.greenTint : '#ddd'}}                
+                              label="Place of Birth"                                
+                              validators = {['required']}
+                              errorMessages = {["this field is required"]}                                                                                        
+                              value={pob}                             
+                              
+                            />}
+                          />
                         </Grid>
                     </Grid>                      
               </div>
@@ -803,7 +847,7 @@ export const PersonalInformation = (props)=>{
               <span>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </span>
-              <Grid container  lg={100} marginX={1}>
+              {/* <Grid container  lg={100} marginX={1}>
                         <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
                         <TextField
                           type="text"
@@ -833,7 +877,7 @@ export const PersonalInformation = (props)=>{
                           inputProps={inputProps}                          
                         />
                         </Grid>
-                    </Grid>    
+                    </Grid>     */}
               </div>
 
               <div style={{flexDirection:'row',display:'flex'}}>
@@ -919,7 +963,7 @@ export const PersonalInformation = (props)=>{
                       </Grid>              
                 </div>
 
-                <div style={{flexDirection:'row',display:'flex'}}>                          
+                <div style={{flexDirection:'row',display:'flex'}} >                          
                     <Grid container  lg={100} marginX={1}>
                         <Grid item lg={12} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
                           <TextField
